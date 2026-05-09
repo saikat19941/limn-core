@@ -9,7 +9,11 @@ const app = express();
 
 
 // Security Middleware
-app.use(helmet());
+app.use(
+    helmet({
+        contentSecurityPolicy: false
+    })
+);
 
 
 // CORS Middleware
@@ -22,6 +26,8 @@ app.use(morgan("dev"));
 
 // Body Parser
 app.use(express.json());
+
+app.use(express.static("public"));
 
 
 // Rate Limiter

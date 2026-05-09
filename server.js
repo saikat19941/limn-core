@@ -3,6 +3,8 @@ require("dotenv").config();
 const http = require("http");
 const { Server } = require("socket.io");
 
+const { initSocket } = require("./src/sockets/socketManager");
+
 const app = require("./src/app");
 
 const { testConnection } = require("./src/config/db");
@@ -20,6 +22,9 @@ const io = new Server(server, {
         origin: "*"
     }
 });
+
+// Initialize Socket Manager
+initSocket(io);
 
 
 // Socket Connection

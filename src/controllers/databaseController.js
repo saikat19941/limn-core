@@ -10,6 +10,8 @@ const {
 
 const { isValidIdentifier } = require("../utils/validators");
 
+const { getIO } = require("../sockets/socketManager");
+
 // Database List Controller
 const fetchDatabases = async (req, res) => {
 
@@ -283,6 +285,14 @@ const insertRow = async (req, res) => {
             data
         );
 
+        
+        // Emit Socket Event
+        getIO().emit("row_inserted", {
+            database: dbName,
+            table: tableName,
+            insertedId: result.insertId,
+            data
+        });
 
         res.json({
             success: true,
@@ -382,6 +392,14 @@ const updateRow = async (req, res) => {
             data
         );
 
+        // Emit Socket Event
+        getIO().emit("row_updated", {
+            database: dbName,
+            table: tableName,
+            rowId: id,
+            updatedData: data
+        });
+
 
         res.json({
             success: true,
@@ -439,6 +457,12 @@ const deleteRow = async (req, res) => {
             id
         );
 
+        // Emit Socket Event
+        getIO().emit("row_deleted", {
+            database: dbName,
+            table: tableName,
+            rowId: id
+        });
 
         res.json({
             success: true,
