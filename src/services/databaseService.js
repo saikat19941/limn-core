@@ -364,6 +364,126 @@ const deleteRowFromTable = async (
 
 };
 
+// Find User By Email
+const findUserByEmail = async (email) => {
+
+    try {
+
+        const query = `
+            SELECT *
+            FROM limn_core.users
+            WHERE email = ?
+            LIMIT 1
+        `;
+
+        const [rows] = await pool.query(
+            query,
+            [email]
+        );
+
+        return rows[0];
+
+    } catch (error) {
+
+        throw error;
+
+    }
+
+};
+
+// Find API Key
+const findApiKey = async (apiKey) => {
+
+    try {
+
+        const query = `
+            SELECT *
+            FROM limn_core.api_keys
+            WHERE api_key = ?
+            AND is_active = TRUE
+            LIMIT 1
+        `;
+
+        const [rows] = await pool.query(
+            query,
+            [apiKey]
+        );
+
+        return rows[0];
+
+    } catch (error) {
+
+        throw error;
+
+    }
+
+};
+
+// Update API Key Usage
+const updateApiKeyUsage = async (id) => {
+
+    try {
+
+        const query = `
+            UPDATE limn_core.api_keys
+            SET
+                used_hits = used_hits + 1,
+                last_used_at = NOW()
+            WHERE id = ?
+        `;
+
+        await pool.query(query, [id]);
+
+    } catch (error) {
+
+        throw error;
+
+    }
+
+};
+
+// Create Audit Log
+const createAuditLog = async (logData) => {
+
+    try {
+
+        const query = `
+            INSERT INTO limn_core.audit_logs (
+
+                user_type,
+                user_identifier,
+                action_type,
+                database_name,
+                table_name,
+                row_id,
+                action_data,
+                ip_address
+
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        `;
+
+        await pool.query(query, [
+
+            logData.user_type,
+            logData.user_identifier,
+            logData.action_type,
+            logData.database_name,
+            logData.table_name,
+            logData.row_id,
+            JSON.stringify(logData.action_data),
+            logData.ip_address
+
+        ]);
+
+    } catch (error) {
+
+        throw error;
+
+    }
+
+};
+
 module.exports = {
     getAllDatabases,
     getTablesFromDatabase,
@@ -371,5 +491,9 @@ module.exports = {
     getTableColumns,
     insertRowIntoTable,
     updateRowInTable,
-    deleteRowFromTable
+    deleteRowFromTable,
+    findUserByEmail,
+    findApiKey,
+    updateApiKeyUsage,
+    createAuditLog
 };

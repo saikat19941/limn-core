@@ -5,14 +5,18 @@ const {
     getTableColumns,
     insertRowIntoTable,
     updateRowInTable,
-    deleteRowFromTable
+    deleteRowFromTable,
+    createAuditLog
 } = require("../services/databaseService");
 
 const { isValidIdentifier } = require("../utils/validators");
 
 const { getIO } = require("../sockets/socketManager");
 
-// Database List Controller
+
+// =============================
+// DATABASE LIST
+// =============================
 const fetchDatabases = async (req, res) => {
 
     try {
@@ -38,7 +42,9 @@ const fetchDatabases = async (req, res) => {
 };
 
 
-// Fetch Tables
+// =============================
+// FETCH TABLES
+// =============================
 const fetchTables = async (req, res) => {
 
     try {
@@ -66,13 +72,15 @@ const fetchTables = async (req, res) => {
 
 };
 
-// Fetch Table Rows
+
+// =============================
+// FETCH TABLE ROWS
+// =============================
 const fetchTableRows = async (req, res) => {
 
     try {
 
         const { dbName, tableName } = req.params;
-
 
         // Validate DB Name
         if (!isValidIdentifier(dbName)) {
@@ -83,7 +91,6 @@ const fetchTableRows = async (req, res) => {
             });
 
         }
-
 
         // Validate Table Name
         if (!isValidIdentifier(tableName)) {
@@ -101,12 +108,10 @@ const fetchTableRows = async (req, res) => {
             tableName
         );
 
-
         // Extract Column Names
         const validColumns = columnsData.map(
             column => column.Field
         );
-
 
         // Query Params
         const {
@@ -118,56 +123,49 @@ const fetchTableRows = async (req, res) => {
         } = req.query;
 
         // Validate Sort Column
-if (sortBy && !validColumns.includes(sortBy)) {
+        if (sortBy && !validColumns.includes(sortBy)) {
 
-    return res.status(400).json({
-        success: false,
-        message: "Invalid Sort Column"
-    });
-
-}
-
-
-// Validate Filter Columns
-for (const key of Object.keys(filters)) {
-
-    let columnName = key;
-
-    
-    // Remove Operators
-    const operators = [
-        "_gt",
-        "_lt",
-        "_gte",
-        "_lte",
-        "_ne",
-        "_like"
-    ];
-
-
-    for (const operator of operators) {
-
-        if (columnName.endsWith(operator)) {
-
-            columnName = columnName.replace(operator, "");
+            return res.status(400).json({
+                success: false,
+                message: "Invalid Sort Column"
+            });
 
         }
 
-    }
+        // Validate Filter Columns
+        for (const key of Object.keys(filters)) {
 
+            let columnName = key;
 
-    // Check Column Exists
-    if (!validColumns.includes(columnName)) {
+            const operators = [
+                "_gt",
+                "_lt",
+                "_gte",
+                "_lte",
+                "_ne",
+                "_like"
+            ];
 
-        return res.status(400).json({
-            success: false,
-            message: `Invalid Filter Column: ${columnName}`
-        });
+            for (const operator of operators) {
 
-    }
+                if (columnName.endsWith(operator)) {
 
-}
+                    columnName = columnName.replace(operator, "");
 
+                }
+
+            }
+
+            if (!validColumns.includes(columnName)) {
+
+                return res.status(400).json({
+                    success: false,
+                    message: `Invalid Filter Column: ${columnName}`
+                });
+
+            }
+
+        }
 
         // Fetch Rows
         const rows = await fetchRowsFromTable(
@@ -181,7 +179,6 @@ for (const key of Object.keys(filters)) {
                 filters
             }
         );
-
 
         res.json({
             success: true,
@@ -207,7 +204,9 @@ for (const key of Object.keys(filters)) {
 };
 
 
-// Insert Row
+// =============================
+// INSERT ROW
+// =============================
 const insertRow = async (req, res) => {
 
     try {
@@ -215,7 +214,6 @@ const insertRow = async (req, res) => {
         const { dbName, tableName } = req.params;
 
         const data = req.body;
-
 
         // Empty Body Check
         if (!data || Object.keys(data).length === 0) {
@@ -227,7 +225,6 @@ const insertRow = async (req, res) => {
 
         }
 
-
         // Validate DB Name
         if (!isValidIdentifier(dbName)) {
 
@@ -237,7 +234,6 @@ const insertRow = async (req, res) => {
             });
 
         }
-
 
         // Validate Table Name
         if (!isValidIdentifier(tableName)) {
@@ -249,19 +245,16 @@ const insertRow = async (req, res) => {
 
         }
 
-
         // Get Table Columns
         const columnsData = await getTableColumns(
             dbName,
             tableName
         );
 
-
         // Extract Valid Columns
         const validColumns = columnsData.map(
             column => column.Field
         );
-
 
         // Validate Body Fields
         for (const key of Object.keys(data)) {
@@ -277,7 +270,6 @@ const insertRow = async (req, res) => {
 
         }
 
-
         // Insert Data
         const result = await insertRowIntoTable(
             dbName,
@@ -285,13 +277,41 @@ const insertRow = async (req, res) => {
             data
         );
 
-        
         // Emit Socket Event
-        getIO().emit("row_inserted", {
-            database: dbName,
-            table: tableName,
-            insertedId: result.insertId,
-            data
+        getIO()
+            .to(`${dbName}.${tableName}`)
+            .emit("row_inserted", {
+                database: dbName,
+                table: tableName,
+                insertedId: result.insertId,
+                data
+            });
+
+        // Audit Log
+        await createAuditLog({
+
+            user_type:
+                req.headers["x-api-key"]
+                    ? "api_key"
+                    : "jwt",
+
+            user_identifier:
+                req.user?.email ||
+                req.user?.apiKey ||
+                "unknown",
+
+            action_type: "INSERT",
+
+            database_name: dbName,
+
+            table_name: tableName,
+
+            row_id: result.insertId,
+
+            action_data: data,
+
+            ip_address: req.ip
+
         });
 
         res.json({
@@ -313,7 +333,10 @@ const insertRow = async (req, res) => {
 
 };
 
-// Update Row
+
+// =============================
+// UPDATE ROW
+// =============================
 const updateRow = async (req, res) => {
 
     try {
@@ -321,7 +344,6 @@ const updateRow = async (req, res) => {
         const { dbName, tableName, id } = req.params;
 
         const data = req.body;
-
 
         // Empty Body Check
         if (!data || Object.keys(data).length === 0) {
@@ -333,7 +355,6 @@ const updateRow = async (req, res) => {
 
         }
 
-
         // Validate DB Name
         if (!isValidIdentifier(dbName)) {
 
@@ -343,7 +364,6 @@ const updateRow = async (req, res) => {
             });
 
         }
-
 
         // Validate Table Name
         if (!isValidIdentifier(tableName)) {
@@ -355,19 +375,16 @@ const updateRow = async (req, res) => {
 
         }
 
-
         // Get Table Columns
         const columnsData = await getTableColumns(
             dbName,
             tableName
         );
 
-
         // Extract Valid Columns
         const validColumns = columnsData.map(
             column => column.Field
         );
-
 
         // Validate Body Fields
         for (const key of Object.keys(data)) {
@@ -383,7 +400,6 @@ const updateRow = async (req, res) => {
 
         }
 
-
         // Update Data
         const result = await updateRowInTable(
             dbName,
@@ -393,13 +409,41 @@ const updateRow = async (req, res) => {
         );
 
         // Emit Socket Event
-        getIO().emit("row_updated", {
-            database: dbName,
-            table: tableName,
-            rowId: id,
-            updatedData: data
-        });
+        getIO()
+            .to(`${dbName}.${tableName}`)
+            .emit("row_updated", {
+                database: dbName,
+                table: tableName,
+                rowId: id,
+                updatedData: data
+            });
 
+        // Audit Log
+        await createAuditLog({
+
+            user_type:
+                req.headers["x-api-key"]
+                    ? "api_key"
+                    : "jwt",
+
+            user_identifier:
+                req.user?.email ||
+                req.user?.apiKey ||
+                "unknown",
+
+            action_type: "UPDATE",
+
+            database_name: dbName,
+
+            table_name: tableName,
+
+            row_id: id,
+
+            action_data: data,
+
+            ip_address: req.ip
+
+        });
 
         res.json({
             success: true,
@@ -420,13 +464,15 @@ const updateRow = async (req, res) => {
 
 };
 
-// Delete Row
+
+// =============================
+// DELETE ROW
+// =============================
 const deleteRow = async (req, res) => {
 
     try {
 
         const { dbName, tableName, id } = req.params;
-
 
         // Validate DB Name
         if (!isValidIdentifier(dbName)) {
@@ -438,7 +484,6 @@ const deleteRow = async (req, res) => {
 
         }
 
-
         // Validate Table Name
         if (!isValidIdentifier(tableName)) {
 
@@ -449,7 +494,6 @@ const deleteRow = async (req, res) => {
 
         }
 
-
         // Delete Row
         const result = await deleteRowFromTable(
             dbName,
@@ -458,10 +502,39 @@ const deleteRow = async (req, res) => {
         );
 
         // Emit Socket Event
-        getIO().emit("row_deleted", {
-            database: dbName,
-            table: tableName,
-            rowId: id
+        getIO()
+            .to(`${dbName}.${tableName}`)
+            .emit("row_deleted", {
+                database: dbName,
+                table: tableName,
+                rowId: id
+            });
+
+        // Audit Log
+        await createAuditLog({
+
+            user_type:
+                req.headers["x-api-key"]
+                    ? "api_key"
+                    : "jwt",
+
+            user_identifier:
+                req.user?.email ||
+                req.user?.apiKey ||
+                "unknown",
+
+            action_type: "DELETE",
+
+            database_name: dbName,
+
+            table_name: tableName,
+
+            row_id: id,
+
+            action_data: null,
+
+            ip_address: req.ip
+
         });
 
         res.json({
@@ -482,6 +555,7 @@ const deleteRow = async (req, res) => {
     }
 
 };
+
 
 module.exports = {
     fetchDatabases,

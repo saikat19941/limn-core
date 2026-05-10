@@ -32,6 +32,17 @@ io.on("connection", (socket) => {
 
     console.log("New Socket Connected:", socket.id);
 
+    // Join Room
+    socket.on("join_table", (roomName) => {
+
+        socket.join(roomName);
+
+        console.log(
+            `Socket ${socket.id} joined room: ${roomName}`
+        );
+
+    });
+
     
     socket.on("disconnect", () => {
         console.log("Socket Disconnected:", socket.id);

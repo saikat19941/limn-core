@@ -4,6 +4,7 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
 const databaseRoutes = require("./routes/databaseRoutes");
+const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 
@@ -39,6 +40,7 @@ const limiter = rateLimit({
 app.use(limiter);
 
 app.use("/api/databases", databaseRoutes);
+app.use("/api/auth", authRoutes);
 
 // Test Route
 app.get("/", (req, res) => {

@@ -2,6 +2,20 @@ const express = require("express");
 
 const router = express.Router();
 
+
+// SMART ACCESS MIDDLEWARE
+const {
+    allowAccess
+} = require("../middleware/accessMiddleware");
+
+
+// ROLE MIDDLEWARE
+const {
+    allowRoles
+} = require("../middleware/roleMiddleware");
+
+
+// CONTROLLERS
 const {
     fetchDatabases,
     fetchTables,
@@ -11,23 +25,92 @@ const {
     deleteRow
 } = require("../controllers/databaseController");
 
-// DELETE ROW
-router.delete("/:dbName/:tableName/:id", deleteRow);
 
-// UPDATE ROW
-router.put("/:dbName/:tableName/:id", updateRow);
 
-// INSERT ROW
-router.post("/:dbName/:tableName", insertRow);
+/*
+|--------------------------------------------------------------------------
+| DATABASE LIST
+|--------------------------------------------------------------------------
+*/
 
-// GET DATABASE LIST
-router.get("/", fetchDatabases);
+router.get(
+    "/",
+    allowAccess,
+    fetchDatabases
+);
 
-// GET TABLE LIST
-router.get("/:dbName/tables", fetchTables);
 
-// GET TABLE ROWS
-router.get("/:dbName/:tableName", fetchTableRows);
+
+/*
+|--------------------------------------------------------------------------
+| TABLE LIST
+|--------------------------------------------------------------------------
+*/
+
+router.get(
+    "/:dbName/tables",
+    allowAccess,
+    fetchTables
+);
+
+
+
+/*
+|--------------------------------------------------------------------------
+| TABLE ROWS
+|--------------------------------------------------------------------------
+*/
+
+router.get(
+    "/:dbName/:tableName",
+    allowAccess,
+    fetchTableRows
+);
+
+
+
+/*
+|--------------------------------------------------------------------------
+| INSERT ROW
+|--------------------------------------------------------------------------
+*/
+
+router.post(
+    "/:dbName/:tableName",
+    allowAccess,
+    allowRoles("admin", "editor"),
+    insertRow
+);
+
+
+
+/*
+|--------------------------------------------------------------------------
+| UPDATE ROW
+|--------------------------------------------------------------------------
+*/
+
+router.put(
+    "/:dbName/:tableName/:id",
+    allowAccess,
+    allowRoles("admin", "editor"),
+    updateRow
+);
+
+
+
+/*
+|--------------------------------------------------------------------------
+| DELETE ROW
+|--------------------------------------------------------------------------
+*/
+
+router.delete(
+    "/:dbName/:tableName/:id",
+    allowAccess,
+    allowRoles("admin"),
+    deleteRow
+);
 
 
 

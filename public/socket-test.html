@@ -47,6 +47,12 @@
 
         const socket = io();
 
+        // Join Specific Table Room
+        socket.emit(
+            "join_table",
+            "classicmodels.test"
+        );
+
 
         const eventsDiv = document.getElementById("events");
 
