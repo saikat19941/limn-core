@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LIMN CORE Documentation</title>
+
+  <style>
+
+    html {
+      scroll-behavior: smooth;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #f1f5f9;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 280px;
+      background: #111827;
+      padding: 20px;
+      border-right: 1px solid #1e293b;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      overflow-y: auto;
+    }
+
+    .sidebar h1 {
+      font-size: 24px;
+      color: #38bdf8;
+      margin-bottom: 20px;
+    }
+
+    .sidebar a {
+      display: block;
+      color: #cbd5e1;
+      text-decoration: none;
+      margin-bottom: 12px;
+      padding: 10px;
+      border-radius: 8px;
+      transition: 0.2s;
+    }
+
+    .sidebar a:hover {
+      background: #1e293b;
+      color: #38bdf8;
+    }
+
+    .content {
+      margin-left: 280px;
+      padding: 40px;
+      width: calc(100% - 280px);
+    }
+
+    section {
+      margin-bottom: 60px;
+    }
+
+    h2 {
+      color: #38bdf8;
+      margin-bottom: 15px;
+      font-size: 32px;
+    }
+
+    h3 {
+      margin-top: 25px;
+      margin-bottom: 10px;
+      color: #facc15;
+    }
+
+    p {
+      line-height: 1.8;
+      color: #cbd5e1;
+    }
+
+    .card {
+      background: #111827;
+      border: 1px solid #1e293b;
+      padding: 20px;
+      border-radius: 14px;
+      margin-top: 20px;
+    }
+
+    pre {
+      position: relative;
+      background: #020617;
+      color: #38bdf8;
+      padding: 16px;
+      border-radius: 10px;
+      overflow-x: auto;
+      margin-top: 10px;
+      border: 1px solid #1e293b;
+    }
+
+    code {
+      font-family: Consolas, monospace;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    table th,
+    table td {
+      border: 1px solid #1e293b;
+      padding: 12px;
+      text-align: left;
+    }
+
+    table th {
+      background: #1e293b;
+      color: #38bdf8;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: #0369a1;
+      color: white;
+      font-size: 12px;
+      margin-right: 8px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #0ea5e9, #2563eb);
+      padding: 40px;
+      border-radius: 20px;
+      margin-bottom: 40px;
+    }
+
+    .hero h1 {
+      font-size: 48px;
+      margin-bottom: 15px;
+    }
+
+    .hero p {
+      color: white;
+      font-size: 18px;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #0ea5e9;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: #0284c7;
+    }
+
+    .footer {
+      margin-top: 80px;
+      padding-top: 20px;
+      border-top: 1px solid #1e293b;
+      color: #94a3b8;
+    }
+
+    @media(max-width: 900px) {
+      .sidebar {
+        display: none;
+      }
+
+      .content {
+        margin-left: 0;
+        width: 100%;
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <h1>LIMN CORE</h1>
+
+    <a href="#overview">Overview</a>
+    <a href="#features">Features</a>
+    <a href="#installation">Installation</a>
+    <a href="#authentication">Authentication</a>
+    <a href="#crud">CRUD API</a>
+    <a href="#filtering">Filtering</a>
+    <a href="#socket">Realtime Socket</a>
+    <a href="#roles">Roles</a>
+    <a href="#audit">Audit Logs</a>
+    <a href="#security">Security</a>
+    <a href="#future">Future Features</a>
+  </div>
+
+  <div class="content">
+
+    <div class="hero">
+      <h1>LIMN CORE</h1>
+      <p>
+        Professional Dynamic Realtime Database Engine
+      </p>
+    </div>
+
+    <section id="overview">
+      <h2>Overview</h2>
+
+      <div class="card">
+        <p>
+          LIMN CORE is a professional backend engine built using Express.js,
+          MariaDB, Socket.io, JWT Authentication and Dynamic CRUD APIs.
+        </p>
+
+        <br>
+
+        <span class="badge">Express.js</span>
+        <span class="badge">MariaDB</span>
+        <span class="badge">Socket.io</span>
+        <span class="badge">JWT</span>
+        <span class="badge">Realtime</span>
+      </div>
+    </section>
+
+
+    <section id="features">
+      <h2>Features</h2>
+
+      <table>
+        <tr>
+          <th>Feature</th>
+          <th>Status</th>
+        </tr>
+
+        <tr>
+          <td>Dynamic CRUD API</td>
+          <td>✅</td>
+        </tr>
+
+        <tr>
+          <td>JWT Authentication</td>
+          <td>✅</td>
+        </tr>
+
+        <tr>
+          <td>API Key Authentication</td>
+          <td>✅</td>
+        </tr>
+
+        <tr>
+          <td>Realtime Socket Events</td>
+          <td>✅</td>
+        </tr>
+
+        <tr>
+          <td>Audit Logging</td>
+          <td>✅</td>
+        </tr>
+
+        <tr>
+          <td>Role Permission</td>
+          <td>✅</td>
+        </tr>
+      </table>
+    </section>
+
+
+    <section id="installation">
+      <h2>Installation</h2>
+
+      <div class="card">
+
+        <h3>Clone Repository</h3>
+
+        <pre>
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<code>git clone https://github.com/saikat19941/limn-core.git</code>
+</pre>
+
+
+        <h3>Install Packages</h3>
+
+        <pre>
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<code>npm install</code>
+</pre>
+
+
+        <h3>Start Server</h3>
+
+        <pre>
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<code>npm start</code>
+</pre>
+
+      </div>
+    </section>
+
+
+    <section id="authentication">
+      <h2>Authentication</h2>
+
+      <div class="card">
+
+        <h3>JWT Login</h3>
+
+        <pre>
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<code>POST /api/auth/login</code>
+</pre>
+
+        <pre>
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<code>{
+  "email": "admin@limn.com",
+  "password": "password"
+}</code>
+</pre>
+
+
+        <h3>JWT Header</h3>
+
+        <pre>
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<code>Authorization: Bearer YOUR_TOKEN</code>
+</pre>
+
+
+        <h3>API KEY Header</h3>
+
+        <pre>
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<code>x-api-key: limn_sk_default_admin_key</code>
+</pre>
+
+      </div>
+    </section>
+
+
+    <section id="crud">
+      <h2>CRUD API Examples</h2>
+
+      <div class="card">
+
+        <h3>Fetch Databases</h3>
+
+        <pre>
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<code>GET /api/databases</code>
+</pre>
+
+
+        <h3>Fetch Tables</h3>
+
+        <pre>
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<code>GET /api/databases/classicmodels/tables</code>
+</pre>
+
+
+        <h3>Fetch Rows</h3>
+
+        <pre>
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<code>GET /api/databases/classicmodels/customers</code>
+</pre>
+
+
+        <h3>Insert Row</h3>
+
+        <pre>
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<code>POST /api/databases/classicmodels/test</code>
+</pre>
+
+        <pre>
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<code>{
+  "name": "Saikat"
+}</code>
+</pre>
+
+
+        <h3>Update Row</h3>
+
+        <pre>
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<code>PUT /api/databases/classicmodels/test/1</code>
+</pre>
+
+        <pre>
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<code>{
+  "name": "Updated"
+}</code>
+</pre>
+
+
+        <h3>Delete Row</h3>
+
+        <pre>
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<code>DELETE /api/databases/classicmodels/test/1</code>
+</pre>
+
+      </div>
+    </section>
+
+
+    <section id="filtering">
+      <h2>Filtering & Pagination</h2>
+
+      <div class="card">
+
+        <h3>Advanced Filtering</h3>
+
+        <pre>
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<code>GET /api/databases/classicmodels/customers?creditLimit_gt=50000</code>
+</pre>
+
+
+        <h3>LIKE Search</h3>
+
+        <pre>
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<code>GET /api/databases/classicmodels/customers?customerName_like=Mini</code>
+</pre>
+
+
+        <h3>Pagination</h3>
+
+        <pre>
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<code>GET /api/databases/classicmodels/customers?page=1&limit=10</code>
+</pre>
+
+
+        <h3>Sorting</h3>
+
+        <pre>
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<code>GET /api/databases/classicmodels/customers?sortBy=customerName&order=ASC</code>
+</pre>
+
+      </div>
+    </section>
+
+
+    <section id="socket">
+      <h2>Realtime Socket System</h2>
+
+      <div class="card">
+
+        <h3>Join Table Room</h3>
+
+        <pre>
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<code>socket.emit(
+  "join_table",
+  "classicmodels.test"
+);</code>
+</pre>
+
+
+        <h3>Listen Insert Event</h3>
+
+        <pre>
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<code>socket.on("row_inserted", (data) => {
+  console.log(data);
+});</code>
+</pre>
+
+
+        <h3>Listen Update Event</h3>
+
+        <pre>
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<code>socket.on("row_updated", (data) => {
+  console.log(data);
+});</code>
+</pre>
+
+
+        <h3>Listen Delete Event</h3>
+
+        <pre>
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<code>socket.on("row_deleted", (data) => {
+  console.log(data);
+});</code>
+</pre>
+
+      </div>
+    </section>
+
+
+    <section id="roles">
+      <h2>Role Permission System</h2>
+
+      <table>
+        <tr>
+          <th>Role</th>
+          <th>GET</th>
+          <th>POST</th>
+          <th>PUT</th>
+          <th>DELETE</th>
+        </tr>
+
+        <tr>
+          <td>viewer</td>
+          <td>✅</td>
+          <td>❌</td>
+          <td>❌</td>
+          <td>❌</td>
+        </tr>
+
+        <tr>
+          <td>editor</td>
+          <td>✅</td>
+          <td>✅</td>
+          <td>✅</td>
+          <td>❌</td>
+        </tr>
+
+        <tr>
+          <td>admin</td>
+          <td>✅</td>
+          <td>✅</td>
+          <td>✅</td>
+          <td>✅</td>
+        </tr>
+      </table>
+    </section>
+
+
+    <section id="audit">
+      <h2>Audit Logging</h2>
+
+      <div class="card">
+
+        <p>
+          Every INSERT, UPDATE and DELETE action is automatically stored.
+        </p>
+
+        <br>
+
+        <pre>
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<code>limn_core.audit_logs</code>
+</pre>
+
+      </div>
+    </section>
+
+
+    <section id="security">
+      <h2>Security Features</h2>
+
+      <div class="card">
+
+        <ul style="line-height: 2; padding-left: 20px;">
+          <li>Helmet Protection</li>
+          <li>JWT Verification</li>
+          <li>API Key Verification</li>
+          <li>Role Based Access</li>
+          <li>SQL Injection Protection</li>
+          <li>Column Validation</li>
+          <li>Audit Logging</li>
+          <li>Realtime Room Isolation</li>
+        </ul>
+
+      </div>
+    </section>
+
+
+    <section id="future">
+      <h2>Future Planned Features</h2>
+
+      <div class="card">
+
+        <ul style="line-height: 2; padding-left: 20px;">
+          <li>Redis Cache</li>
+          <li>Webhook System</li>
+          <li>Docker Support</li>
+          <li>Swagger API Docs</li>
+          <li>Realtime Dashboard</li>
+          <li>Backup System</li>
+          <li>Restore System</li>
+          <li>Queue Jobs</li>
+          <li>Multi Tenant Support</li>
+        </ul>
+
+      </div>
+    </section>
+
+
+    <div class="footer">
+      <p>
+        LIMN CORE Documentation • Created by LIMN CREATION
+      </p>
+    </div>
+
+  </div>
+
+  <script>
+
+    function copyCode(button) {
+
+      const code = button.parentElement.querySelector("code").innerText;
+
+      navigator.clipboard.writeText(code);
+
+      const originalText = button.innerText;
+
+      button.innerText = "Copied!";
+
+      setTimeout(() => {
+        button.innerText = originalText;
+      }, 2000);
+
+    }
+
+  </script>
+
+</body>
+</html>
