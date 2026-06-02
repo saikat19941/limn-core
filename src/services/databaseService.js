@@ -217,10 +217,119 @@ if (filterKeys.length > 0) {
 
 
         // Execute Query
-        const [rows] = await pool.query(query, values);
+        
+        const [rows] = await pool.query(
+            query,
+            values
+        );
+        //ekhane korte hobe ??
+        // Count Query
 
+        let countQuery = `
+            SELECT COUNT(*) as totalRows
+            FROM \`${databaseName}\`.\`${tableName}\`
+        `;
 
-        return rows;
+        const countValues = [];
+
+        if (filterKeys.length > 0) {
+
+            const conditions = [];
+
+            for (const key of filterKeys) {
+
+                const value = filters[key];
+
+                if (key.endsWith("_gt")) {
+
+                    const column = key.replace("_gt", "");
+
+                    conditions.push(`\`${column}\` > ?`);
+
+                    countValues.push(value);
+
+                }
+
+                else if (key.endsWith("_lt")) {
+
+                    const column = key.replace("_lt", "");
+
+                    conditions.push(`\`${column}\` < ?`);
+
+                    countValues.push(value);
+
+                }
+
+                else if (key.endsWith("_gte")) {
+
+                    const column = key.replace("_gte", "");
+
+                    conditions.push(`\`${column}\` >= ?`);
+
+                    countValues.push(value);
+
+                }
+
+                else if (key.endsWith("_lte")) {
+
+                    const column = key.replace("_lte", "");
+
+                    conditions.push(`\`${column}\` <= ?`);
+
+                    countValues.push(value);
+
+                }
+
+                else if (key.endsWith("_ne")) {
+
+                    const column = key.replace("_ne", "");
+
+                    conditions.push(`\`${column}\` != ?`);
+
+                    countValues.push(value);
+
+                }
+
+                else if (key.endsWith("_like")) {
+
+                    const column = key.replace("_like", "");
+
+                    conditions.push(`\`${column}\` LIKE ?`);
+
+                    countValues.push(`%${value}%`);
+
+                }
+
+                else {
+
+                    conditions.push(`\`${key}\` = ?`);
+
+                    countValues.push(value);
+
+                }
+
+            }
+
+            countQuery += `
+                WHERE ${conditions.join(" AND ")}
+            `;
+
+        }
+
+        const [countRows] = await pool.query(
+            countQuery,
+            countValues
+        );
+
+        return {
+
+            rows,
+
+            totalRows:
+                countRows[0].totalRows
+
+        };
+        
 
     } catch (error) {
 

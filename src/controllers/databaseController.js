@@ -168,7 +168,7 @@ const fetchTableRows = async (req, res) => {
         }
 
         // Fetch Rows
-        const rows = await fetchRowsFromTable(
+        const result  = await fetchRowsFromTable(
             dbName,
             tableName,
             {
@@ -186,8 +186,13 @@ const fetchTableRows = async (req, res) => {
             table: tableName,
             page: Number(page),
             limit: Number(limit),
-            total: rows.length,
-            data: rows
+            totalRows: result.totalRows,
+            totalPages: Math.ceil(
+                result.totalRows /
+                Number(limit)
+            ),
+
+            data: result.rows
         });
 
     } catch (error) {
